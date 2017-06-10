@@ -1,0 +1,13 @@
+{
+	"title": "Lythos Mapvote",
+	"type": "ServerContent",
+	"tags":	[ "fun" ],
+	"ignore": [
+		"lythos_mapvote.jpg",
+		"*.git*",
+		"*.md",
+		"*.bat",
+		"*.cmd",
+		"*.gma"
+	]
+}
