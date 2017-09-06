@@ -20,5 +20,5 @@ function ulx.rtvreset(calling_ply)
     PrintMessage(HUD_PRINTTALK, calling_ply:Nick() .. " resets the RockTheVote.")
 end
 
-local cmdRtv = ulx.command(CATEGORY_NAME, "rtv reset", ulx.rtvreset, "!rtvreset")
+local cmdRtv = ulx.command(CATEGORY_NAME, "resetrtv", ulx.rtvreset, "!resetrtv")
 cmdRtv:defaultAccess(ULib.ACCESS_ADMIN)
