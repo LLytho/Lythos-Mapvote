@@ -1,3 +1,10 @@
+# Steam
+You can find the addon on the workshop:
+http://steamcommunity.com/sharedfiles/filedetails/?id=943738100
+
+Check out my other addons:
+http://steamcommunity.com/id/lytho_/myworkshopfiles/?appid=4000
+
 # Lythos-Mapvote
 Mapvote with map icons. Integrated in ULX.
 You can easily call the mapvote through ULX.
