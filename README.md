@@ -13,7 +13,6 @@ The config will be generated after first initialize.
 + **mapExcludes:** Exclude some maps from vote - for an example if you install a map pack you can easily exclude some maps
 
 # Todo
-* rock the vote
 * random map selection (Something like a roulette)
 * smoother vote selection
 * load maps images from a server
