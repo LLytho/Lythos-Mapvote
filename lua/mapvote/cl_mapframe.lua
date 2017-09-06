@@ -36,6 +36,16 @@ function PANEL:Init()
 
     self.voterIcons = {}
 
+    self.hideFrame = vgui.Create("DButton", self)
+    self.hideFrame:SetText("_")
+    self.hideFrame:SetSize(20, 20)
+    self.hideFrame:SetVisible(true)
+    self.hideFrame:SetPos(width - SPACING - 20, 20 + SPACING)
+    self.hideFrame.DoClick = function()
+        self:SetVisible(false)
+        LocalPlayer():ChatPrint("Mapvote hide - Type !mapvoteshow to show mapvote again.")
+    end
+
     self:ParentToHUD()
     self:MakePopup()
     self:SetKeyboardInputEnabled(false)

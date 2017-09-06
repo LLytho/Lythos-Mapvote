@@ -55,6 +55,16 @@ net.Receive("MapVote_UpdateToAllClient", function()
     end
 end)
 
+hook.Add("OnPlayerChat", "Show mapvote again", function(ply, text)
+	text = string.lower(text)
+    text = string.Trim(text)
+
+	if text == "!mapvoteshow" then
+		MapVote.gui:SetVisible(true)
+        return false
+	end
+end)
+
 function MapVote:CalcGUIConstants() 
     -- global variables for the gui components
     local scale = ScrW() / 1920.0
