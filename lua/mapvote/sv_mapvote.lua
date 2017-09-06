@@ -88,11 +88,10 @@ end
 
 
 function MapVote:LoadRevoteBanList() 
-    self:CreateConfigFolderIfNotExists()
+    ConfigHelper:CreateConfigFolderIfNotExists()
 
     if file.Exists("lythos_mapvote/revotebanlist.txt", "DATA") then
-        local jsonString = file.Read("lythos_mapvote/revotebanlist.txt", "DATA")
-        self.revoteBanList = util.JSONToTable(jsonString)
+        self.revoteBanList = ConfigHelper:ReadConfig("revotebanlist")
     end
 
     if not self.revoteBanList then
@@ -122,9 +121,8 @@ end
 function MapVote:SaveRevoteBanList()
     if not self.revoteBanList then return end
 
-    self:CreateConfigFolderIfNotExists()
-    local revoteBanListString = util.TableToJSON(self.revoteBanList, true)
-    file.Write("lythos_mapvote/revotebanlist.txt", revoteBanListString)
+    ConfigHelper:CreateConfigFolderIfNotExists()
+    ConfigHelper:WriteConfig("revotebanlist", revoteBanListString)
 end
 
 function MapVote:InitConfig()
@@ -137,25 +135,17 @@ function MapVote:InitConfig()
     }
     self.config = defaultConfig
 
-    self:CreateConfigFolderIfNotExists()
+    ConfigHelper:CreateConfigFolderIfNotExists()
 
     if file.Exists("lythos_mapvote/config.txt", "DATA") then
-        local jsonString = file.Read("lythos_mapvote/config.txt", "DATA")
-        self.config = util.JSONToTable(jsonString)
+        self.config = ConfigHelper:ReadConfig("config")
 
         if not self:ConfigIsValid() then
             self.config = defaultConfig
         end
     end
 
-    local configString = util.TableToJSON(self.config, true) -- true = prettyPrint
-    file.Write("lythos_mapvote/config.txt", configString)
-end
-
-function MapVote:CreateConfigFolderIfNotExists()
-    if not file.Exists("lythos_mapvote", "DATA") then
-        file.CreateDir("lythos_mapvote")
-    end
+    ConfigHelper:WriteConfig("config", self.config)
 end
 
 function MapVote:ConfigIsValid()

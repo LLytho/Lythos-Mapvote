@@ -4,8 +4,10 @@ if SERVER then
     AddCSLuaFile("mapvote/cl_mapButton.lua")
     AddCSLuaFile("mapvote/cl_mapFrame.lua")
     AddCSLuaFile("mapvote/cl_mapvote.lua")
+    include("mapvote/sv_confighelper.lua")
     include("mapvote/mapvote.lua")
     include("mapvote/sv_mapvote.lua")
+    include("mapvote/sv_rtv.lua")
 else
     include("mapvote/mapvote.lua")
     include("mapvote/cl_mapButton.lua")
