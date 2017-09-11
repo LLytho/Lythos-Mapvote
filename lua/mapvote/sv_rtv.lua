@@ -9,7 +9,7 @@ hook.Add("PlayerSay", "RTV Chatcommand", function(ply, text, public)
     text = string.Trim(text)
 
 	if text == "!rtv" then
-		RunConsoleCommand("rtv")
+		ply:ConCommand("rtv")
 	end
 end)
 
