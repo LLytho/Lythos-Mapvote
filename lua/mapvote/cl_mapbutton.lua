@@ -137,6 +137,7 @@ end
 function PANEL:Blink()
     -- 7 repeats: 3 blinks + stay on blink-color status
     local blinks = 0
+    MapVote.gui:SetVisible(true)  -- The votemenu will popup once the Map has been decided so everyone knows which map will come next even if they closed the GUI
     timer.Create("WinnerBlinkTimer", 0.3, 7, function()
         self.blink = not self.blink
         if self.blink and blinks < 3 then
