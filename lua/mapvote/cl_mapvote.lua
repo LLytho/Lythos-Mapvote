@@ -65,6 +65,15 @@ hook.Add("OnPlayerChat", "Show mapvote again", function(ply, text)
 	end
 end)
 
+-- ConVars (clientsided)
+local cv_spacing = CreateClientConVar( "ttt_mapvote_spacing", "4", true, false, "The spacing between the buttons (1-25). Def:4")
+local cv_max_button_row = CreateClientConVar( "ttt_mapvote_max_button_row", "5", true, false, "The maximum buttons per row (min 1). Def:5")
+local cv_button_w = CreateClientConVar( "ttt_mapvote_button_w", "200", true, false, "The width of the buttons (min 64). Def:200")
+local cv_button_h = CreateClientConVar( "ttt_mapvote_button_h", "250", true, false, "The height of the buttons (min 64). Def:250")
+local cv_avatar_size = CreateClientConVar( "ttt_mapvote_avatar_size", "32", true, false, "The height of the buttons (min 16). Def:32")
+local cv_avatar = CreateClientConVar( "ttt_mapvote_avatar", "1", true, false, "Enables the Avatar. Def:1")
+
+
 function MapVote:CalcGUIConstants() 
     -- global variables for the gui components
     local scale = ScrW() / 1920.0
@@ -73,15 +82,53 @@ function MapVote:CalcGUIConstants()
     MIN_FRAME_W = 200 * UI_SCALE_FACTOR
     MIN_FRAME_H = 200 * UI_SCALE_FACTOR
 
-    SPACING = 4
+    SPACING = math.max(math.min(cv_spacing:GetFloat(),25),1)
 
-    MAPBUTTON_W = 200 * UI_SCALE_FACTOR
-    MAPBUTTON_H = 250 * UI_SCALE_FACTOR
+    MAPBUTTON_W = math.max(math.min(cv_button_w:GetFloat() * UI_SCALE_FACTOR, ScrW()), 64)
+    MAPBUTTON_H = math.max(math.min(cv_button_h:GetFloat() * UI_SCALE_FACTOR, ScrH()), 64)
 
-    MAX_BUTTONROW = 5
-
-    AVATAR_ICON_SIZE = 32 * UI_SCALE_FACTOR
+    MAX_BUTTONROW = math.max(math.min(cv_max_button_row:GetFloat(), math.floor(1920*scale/(MAPBUTTON_W+SPACING))),1)
+	if not cv_avatar:GetBool() then
+		AVATAR_ICON_SIZE = 0
+	else
+	local AVATAR_MAX_SIZE = 0
+		if MAPBUTTON_H < MAPBUTTON_W then
+			AVATAR_MAX_SIZE = MAPBUTTON_H/2
+		else
+			AVATAR_MAX_SIZE = MAPBUTTON_W/2
+		end
+		AVATAR_ICON_SIZE = math.max(math.min(cv_avatar_size:GetFloat() * UI_SCALE_FACTOR, AVATAR_MAX_SIZE), 16)
+	end
 end
+
+-- Settings Tab
+hook.Add("TTTSettingsTabs", "Mapvote4TTTSettingsTab", function(dtabs)
+	local settings_panel = vgui.Create( "DPanelList",dtabs )
+	settings_panel:StretchToParent(0,0,dtabs:GetPadding()*2,0)
+	settings_panel:EnableVerticalScrollbar(true)
+	settings_panel:SetPadding(10)
+	settings_panel:SetSpacing(10)
+	dtabs:AddSheet( "Mapvote", settings_panel, "icon16/cog.png", false, false, "Mapvote settings")
+	
+	local AddonList = vgui.Create( "DIconLayout", settings_panel )
+	AddonList:SetSpaceX( 5 )
+	AddonList:SetSpaceY( 5 )
+	AddonList:Dock( FILL )
+	AddonList:DockMargin( 5, 5, 5, 5 )
+	AddonList:DockPadding( 10, 10, 10, 10 )
+	
+	local General_Settings = vgui.Create( "DForm" )
+	General_Settings:SetSpacing( 10 )
+	General_Settings:SetName( "Layout settings" )
+	General_Settings:SetWide(settings_panel:GetWide()-30)
+	settings_panel:AddItem(General_Settings)
+	
+	General_Settings:CheckBox("Enable Avatars","ttt_mapvote_avatar")
+	
+	General_Settings:NumSlider("Avatar Size", "ttt_mapvote_avatar_size", 16, 512, 0)
+	General_Settings:NumSlider("Button Width", "ttt_mapvote_button_w", 64, 1024, 0)
+	General_Settings:NumSlider("Button Height", "ttt_mapvote_button_h", 64, 1024, 0)
+end)
 
 function MapVote:CreateVoterIcon(ply)
     local icon_blank = vgui.Create("Panel")
