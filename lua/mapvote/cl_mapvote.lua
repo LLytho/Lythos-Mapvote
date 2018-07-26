@@ -68,8 +68,7 @@ end)
 -- ConVars (clientsided)
 local cv_spacing = CreateClientConVar( "ttt_mapvote_spacing", "4", true, false, "The spacing between the buttons (1-25). Def:4")
 local cv_max_button_row = CreateClientConVar( "ttt_mapvote_max_button_row", "5", true, false, "The maximum buttons per row (min 1). Def:5")
-local cv_button_w = CreateClientConVar( "ttt_mapvote_button_w", "200", true, false, "The width of the buttons (min 64). Def:200")
-local cv_button_h = CreateClientConVar( "ttt_mapvote_button_h", "250", true, false, "The height of the buttons (min 64). Def:250")
+local cv_button_size = CreateClientConVar( "ttt_mapvote_button_size", "50", true, false, "The width of the buttons (min 1). Def:50")
 local cv_avatar_size = CreateClientConVar( "ttt_mapvote_avatar_size", "32", true, false, "The height of the buttons (min 16). Def:32")
 local cv_avatar = CreateClientConVar( "ttt_mapvote_avatar", "1", true, false, "Enables the Avatar. Def:1")
 
@@ -83,9 +82,10 @@ function MapVote:CalcGUIConstants()
     MIN_FRAME_H = 200 * UI_SCALE_FACTOR
 
     SPACING = math.max(math.min(cv_spacing:GetFloat(),25),1)
-
-    MAPBUTTON_W = math.max(math.min(cv_button_w:GetFloat() * UI_SCALE_FACTOR, ScrW()), 64)
-    MAPBUTTON_H = math.max(math.min(cv_button_h:GetFloat() * UI_SCALE_FACTOR, ScrH()), 64)
+	
+	local maxSize = math.min(cv_button_size:GetFloat() * UI_SCALE_FACTOR * 200 / 50, ScrW()) / 200
+    MAPBUTTON_W = math.max(math.min(cv_button_size:GetFloat() * UI_SCALE_FACTOR * 200 / 50, maxSize * 200), 1)
+    MAPBUTTON_H = math.max(math.min(cv_button_size:GetFloat() * UI_SCALE_FACTOR * 250 / 50, maxSize * 250), 1)
 
     MAX_BUTTONROW = math.max(math.min(cv_max_button_row:GetFloat(), math.floor(1920*scale/(MAPBUTTON_W+SPACING))),1)
 	if not cv_avatar:GetBool() then
@@ -110,24 +110,38 @@ hook.Add("TTTSettingsTabs", "Mapvote4TTTSettingsTab", function(dtabs)
 	settings_panel:SetSpacing(10)
 	dtabs:AddSheet( "Mapvote", settings_panel, "icon16/cog.png", false, false, "Mapvote settings")
 	
-	local settings_list = vgui.Create( "DIconLayout", settings_panel )
-	settings_list:SetSpaceX( 5 )
-	settings_list:SetSpaceY( 5 )
-	settings_list:Dock( FILL )
-	settings_list:DockMargin( 5, 5, 5, 5 )
-	settings_list:DockPadding( 10, 10, 10, 10 )
+	local AddonList = vgui.Create( "DIconLayout", settings_panel )
+	AddonList:SetSpaceX( 5 )
+	AddonList:SetSpaceY( 5 )
+	AddonList:Dock( FILL )
+	AddonList:DockMargin( 5, 5, 5, 5 )
+	AddonList:DockPadding( 10, 10, 10, 10 )
 	
-	local layout_settings = vgui.Create( "DForm" )
-	layout_settings:SetSpacing( 10 )
-	layout_settings:SetName( "Layout settings" )
-	layout_settings:SetWide(settings_panel:GetWide()-30)
-	settings_panel:AddItem(layout_settings)
+	local General_Settings = vgui.Create( "DForm" )
+	General_Settings:SetSpacing( 10 )
+	General_Settings:SetName( "Layout settings" )
+	General_Settings:SetWide(settings_panel:GetWide()-30)
+	settings_panel:AddItem(General_Settings)
 	
-	layout_settings:CheckBox("Enable Avatars","ttt_mapvote_avatar")
+	General_Settings:CheckBox("Enable Avatars","ttt_mapvote_avatar")
 	
-	layout_settings:NumSlider("Avatar Size", "ttt_mapvote_avatar_size", 16, 512, 0)
-	layout_settings:NumSlider("Button Width", "ttt_mapvote_button_w", 64, 1024, 0)
-	layout_settings:NumSlider("Button Height", "ttt_mapvote_button_h", 64, 1024, 0)
+	General_Settings:NumSlider("Avatar Size", "ttt_mapvote_avatar_size", 16, 512, 0)
+	General_Settings:NumSlider("Button Size", "ttt_mapvote_button_size", 1, 500, 0)
+	
+	General_Settings:NumSlider("Button Spacing", "ttt_mapvote_spacing", 1, 25, 0)
+	
+	General_Settings:NumSlider("Max Buttons per Row", "ttt_mapvote_max_button_row", 1, 500, 0)
+	
+	local Reset_Button = vgui.Create("DButton")
+	Reset_Button:SetText("Reset")
+	Reset_Button.DoClick = function()
+		RunConsoleCommand("ttt_mapvote_spacing", "4")
+		RunConsoleCommand("ttt_mapvote_max_button_row", "5")
+		RunConsoleCommand("ttt_mapvote_button_size", "50")
+		RunConsoleCommand("ttt_mapvote_avatar_size", "32")
+		RunConsoleCommand("ttt_mapvote_avatar", "1")
+	end
+	General_Settings:AddItem( Reset_Button )
 end)
 
 function MapVote:CreateVoterIcon(ply)
