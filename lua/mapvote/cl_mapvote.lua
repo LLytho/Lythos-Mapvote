@@ -87,7 +87,6 @@ function MapVote:CalcGUIConstants()
     MAPBUTTON_W = UI_SCALE_FACTOR * 200 * buttonFactor
     MAPBUTTON_H = UI_SCALE_FACTOR * 250 * buttonFactor
 
-    --MAX_BUTTONROW = math.max(math.min(cv_max_button_row:GetFloat(), math.floor(1920*scale/(MAPBUTTON_W+SPACING))),1)
     MAX_BUTTONROW = math.floor(cv_max_button_row:GetFloat())
 
 	if not cv_avatar:GetBool() then
