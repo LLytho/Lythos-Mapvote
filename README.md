@@ -32,3 +32,7 @@ Stored in data/lythos_mapvote/rtv.txt as JSON.
 * random map selection (Something like a roulette)
 * smoother vote selection
 * load maps images from a server
+
+# Credits
+* [Fresh Garry](https://steamcommunity.com/profiles/76561198125279214/)
+    * Option to change UI size
