@@ -68,7 +68,7 @@ end)
 -- ConVars (clientsided)
 local cv_spacing = CreateClientConVar( "ttt_mapvote_spacing", "4", true, false, "The spacing between the buttons (1-25). Def:4")
 local cv_max_button_row = CreateClientConVar( "ttt_mapvote_max_button_row", "5", true, false, "The maximum buttons per row (min 1). Def:5")
-local cv_button_size = CreateClientConVar( "ttt_mapvote_button_size", "50", true, false, "The width of the buttons (min 1). Def:50")
+local cv_button_size = CreateClientConVar( "ttt_mapvote_button_size", "100", true, false, "The width of the buttons (min 1). Def:50")
 local cv_avatar_size = CreateClientConVar( "ttt_mapvote_avatar_size", "32", true, false, "The height of the buttons (min 16). Def:32")
 local cv_avatar = CreateClientConVar( "ttt_mapvote_avatar", "1", true, false, "Enables the Avatar. Def:1")
 
@@ -83,11 +83,13 @@ function MapVote:CalcGUIConstants()
 
     SPACING = math.max(math.min(cv_spacing:GetFloat(),25),1)
 	
-	local maxSize = math.min(cv_button_size:GetFloat() * UI_SCALE_FACTOR * 200 / 50, ScrW()) / 200
-    MAPBUTTON_W = math.max(math.min(cv_button_size:GetFloat() * UI_SCALE_FACTOR * 200 / 50, maxSize * 200), 1)
-    MAPBUTTON_H = math.max(math.min(cv_button_size:GetFloat() * UI_SCALE_FACTOR * 250 / 50, maxSize * 250), 1)
+    local buttonFactor = cv_button_size:GetFloat() / 100
+    MAPBUTTON_W = UI_SCALE_FACTOR * 200 * buttonFactor
+    MAPBUTTON_H = UI_SCALE_FACTOR * 250 * buttonFactor
 
-    MAX_BUTTONROW = math.max(math.min(cv_max_button_row:GetFloat(), math.floor(1920*scale/(MAPBUTTON_W+SPACING))),1)
+    --MAX_BUTTONROW = math.max(math.min(cv_max_button_row:GetFloat(), math.floor(1920*scale/(MAPBUTTON_W+SPACING))),1)
+    MAX_BUTTONROW = math.floor(cv_max_button_row:GetFloat())
+
 	if not cv_avatar:GetBool() then
 		AVATAR_ICON_SIZE = 0
 	else
@@ -97,7 +99,7 @@ function MapVote:CalcGUIConstants()
 		else
 			AVATAR_MAX_SIZE = MAPBUTTON_W/2
 		end
-		AVATAR_ICON_SIZE = math.max(math.min(cv_avatar_size:GetFloat() * UI_SCALE_FACTOR, AVATAR_MAX_SIZE), 16)
+		AVATAR_ICON_SIZE = math.floor(cv_avatar_size:GetFloat() * UI_SCALE_FACTOR)
 	end
 end
 
@@ -125,19 +127,19 @@ hook.Add("TTTSettingsTabs", "Mapvote4TTTSettingsTab", function(dtabs)
 	
 	General_Settings:CheckBox("Enable Avatars","ttt_mapvote_avatar")
 	
-	General_Settings:NumSlider("Avatar Size", "ttt_mapvote_avatar_size", 16, 512, 0)
-	General_Settings:NumSlider("Button Size", "ttt_mapvote_button_size", 1, 500, 0)
+	General_Settings:NumSlider("Avatar Size", "ttt_mapvote_avatar_size", 16, 64, 0)
+	General_Settings:NumSlider("Button Size", "ttt_mapvote_button_size", 1, 200, 0)
 	
 	General_Settings:NumSlider("Button Spacing", "ttt_mapvote_spacing", 1, 25, 0)
 	
-	General_Settings:NumSlider("Max Buttons per Row", "ttt_mapvote_max_button_row", 1, 500, 0)
+	General_Settings:NumSlider("Max Buttons per Row", "ttt_mapvote_max_button_row", 1, 20, 0)
 	
 	local Reset_Button = vgui.Create("DButton")
 	Reset_Button:SetText("Reset")
 	Reset_Button.DoClick = function()
 		RunConsoleCommand("ttt_mapvote_spacing", "4")
 		RunConsoleCommand("ttt_mapvote_max_button_row", "5")
-		RunConsoleCommand("ttt_mapvote_button_size", "50")
+		RunConsoleCommand("ttt_mapvote_button_size", "100")
 		RunConsoleCommand("ttt_mapvote_avatar_size", "32")
 		RunConsoleCommand("ttt_mapvote_avatar", "1")
 	end
