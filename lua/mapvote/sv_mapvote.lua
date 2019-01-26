@@ -188,7 +188,7 @@ function MapVote:GetRandomMaps()
 			local map = mGmPair[1]
 			local gamemodes = mGmPair[2]
 
-			if file.Exists("maps/"..map..".bsp", "GAME") then
+			if file.Exists("maps/"..map..".bsp", "GAME") then  -- check that the map file actually exists....
 				maps[map] = gamemodes
 			end
 
@@ -213,8 +213,8 @@ function MapVote:GetRandomMaps()
 
 		local mapInConfig = customGMs -- this checks that it's in the map list, or if that's not being used that it has the right prefix
 		if !mapInConfig then mapInConfig = self:HasPrefix(map) end
-        local notExistsInRevoteBanList = not self.revoteBanList[mapstr]
-        local notExclude = not self:IsExlude(mapstr)
+        local notExistsInRevoteBanList = not self.revoteBanList[map]
+        local notExclude = not self:IsExlude(map)
 
         if mapInConfig and notExistsInRevoteBanList and notExclude then 
             local mapAndGM = {}
