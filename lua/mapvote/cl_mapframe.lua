@@ -63,10 +63,10 @@ function PANEL:CalcFrameSize()
 end
 
 function PANEL:AddMaps(maps) 
-     for k, map in pairs(maps) do
+     for k, mapAndGM in pairs(maps) do
         local button = self.mapButtonList:Add("MapButton")
         button:SetSize(MAPBUTTON_W, MAPBUTTON_H)
-        button:SetMapName(map)
+        button:SetMapName(mapAndGM)
         button.id = k
     end
 end
