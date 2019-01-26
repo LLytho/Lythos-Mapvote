@@ -47,5 +47,5 @@ Stored in data/lythos_mapvote/rtv.txt as JSON.
 # Credits
 * [Fresh Garry](https://steamcommunity.com/profiles/76561198125279214/)
     * Option to change UI size
-* [Merrick King]
+* [Merrick King](https://github.com/MerrickKing)
 	* Option to change gamemode during a mapvote

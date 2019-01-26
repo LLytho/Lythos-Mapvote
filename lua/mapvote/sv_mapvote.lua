@@ -184,9 +184,9 @@ function MapVote:GetRandomMaps()
 		local index = 0
 		local line = mlFile:ReadLine()
 		while line do
-			local mGmPair = string.Split(string.gsub(line, "\n", ""), ":") -- remove newline character and split maps from GMs
-			local map = mGmPair[1]
-			local gamemodes = mGmPair[2]
+			local mGmPair = string.Split(string.TrimRight(line, "\n"), ":") -- remove newline character and split maps from GMs
+			local map = string.Trim(mGmPair[1])  -- trim off any spaces that might have been left in
+			local gamemodes = smGmPair[2] -- will trim whitespace later
 
 			if file.Exists("maps/"..map..".bsp", "GAME") then  -- check that the map file actually exists....
 				maps[map] = gamemodes
@@ -219,7 +219,7 @@ function MapVote:GetRandomMaps()
         if mapInConfig and notExistsInRevoteBanList and notExclude then 
             local mapAndGM = {}
 			local gamemodesList = string.Split(gamemodes, ",")
-			mapAndGM[map] = gamemodesList[math.random(#gamemodesList)] -- randomly selects one of the gamemodes linked to that map
+			mapAndGM[map] = string.Trim(gamemodesList[math.random(#gamemodesList)]) -- randomly selects one of the gamemodes linked to that map
 			table.insert(result, mapAndGM)
             i = i + 1
         end
