@@ -186,7 +186,7 @@ function MapVote:GetRandomMaps()
 		while line do
 			local mGmPair = string.Split(string.TrimRight(line, "\n"), ":") -- remove newline character and split maps from GMs
 			local map = string.Trim(mGmPair[1])  -- trim off any spaces that might have been left in
-			local gamemodes = smGmPair[2] -- will trim whitespace later
+			local gamemodes = mGmPair[2] -- will trim whitespace later
 
 			if file.Exists("maps/"..map..".bsp", "GAME") then  -- check that the map file actually exists....
 				maps[map] = gamemodes
