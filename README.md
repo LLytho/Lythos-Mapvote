@@ -18,7 +18,18 @@ Stored in data/lythos_mapvote/config.txt as JSON.
 + **mapsToVote:** Amount of maps to vote for (*default 10*)
 + **voteTime:** Vote time (*default 20*)
 + **mapPrefixes:** Only show maps with given prefixes (*default ttt_*)
++ **defaultGamemode:** If not using maplist.txt, this will be the gamemode used for all mapvotes
 + **mapExcludes:** Exclude some maps from vote - for an example if you install a map pack you can easily exclude some maps
+
+## MapList
+If this exists then each map may also have an associated gamemode (or multiple gamemodes where one is randomly selected) that will be displayed on the vote buttons).
+Maps and gamemodes are defined on separate lines in the format:
+```
+map1:gamemode1,gamemode2
+map2:gamemode1
+```
+Note to devs: This format is used because string length limits mean that the file needs to be read line-by-line and this was just a simple way of doing it.
+Should be created in data/lythos_mapvote/mapList.txt
 
 ## RockTheVote
 Stored in data/lythos_mapvote/rtv.txt as JSON.
@@ -36,3 +47,5 @@ Stored in data/lythos_mapvote/rtv.txt as JSON.
 # Credits
 * [Fresh Garry](https://steamcommunity.com/profiles/76561198125279214/)
     * Option to change UI size
+* [Merrick King](https://github.com/MerrickKing)
+	* Option to change gamemode during a mapvote

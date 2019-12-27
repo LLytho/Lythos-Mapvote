@@ -4,6 +4,12 @@ surface.CreateFont("MapNameFont", {
     weight = 300,
     antialias = true
 })
+surface.CreateFont("gameModeNameFont", {
+    font = "Tahoma",
+    size = 14,
+    weight = 200,
+    antialias = true
+})
 
 local PANEL = {}
 
@@ -23,15 +29,21 @@ function PANEL:Init()
     self.imageView:SetSize(size, size)
     self.imageView:SetPos(SPACING, 2 * SPACING)
 
-    self.mapName = vgui.Create("DLabel", self)
+	local spaceBelowImageView = MAPBUTTON_H - (size + SPACING)
 
-    local spaceBelowImageView = MAPBUTTON_H - (size + SPACING)
-    
-    self.mapName:SetPos(SPACING, size + SPACING)
+    self.mapName = vgui.Create("DLabel", self)
+    self.mapName:SetPos(SPACING, size - (SPACING))
     self.mapName:SetSize(size, spaceBelowImageView)
     self.mapName:SetFont("MapNameFont")
     self.mapName:SetTextColor( Color( 30, 30, 30, 255 ) )
     self.mapName:SetContentAlignment( 5 )
+
+	self.gameModeName = vgui.Create("DLabel", self)
+	self.gameModeName:SetPos(SPACING, size + (5*SPACING) )
+	self.gameModeName:SetSize(size, spaceBelowImageView);
+	self.gameModeName:SetFont("gameModeNameFont")
+	self.gameModeName:SetTextColor( Color( 30, 30, 30, 255 ) )
+    self.gameModeName:SetContentAlignment( 5 )
 end
 
 function PANEL:PaintOverride(w, h) 
@@ -57,13 +69,21 @@ function PANEL:DoClick()
 end
 
 
-function PANEL:SetMapName(name) 
-    self.mapName:SetText(name)    
+function PANEL:SetMapName(mapAndGM) 
+	local map
+	local gameModeName
+	for m, g in pairs(mapAndGM) do
+		map = m
+		gamemode = g
+	end
 
-    if file.Exists("maps/thumb/" .. name .. ".png", "GAME") then
-        self.imageView:SetImage("maps/thumb/" .. name .. ".png")
-    elseif file.Exists("maps/" .. name .. ".png", "GAME") then
-        self.imageView:SetImage("maps/" .. name .. ".png")
+    self.mapName:SetText(map)
+	self.gameModeName:SetText(gamemode)
+
+    if file.Exists("maps/thumb/" .. map .. ".png", "GAME") then
+        self.imageView:SetImage("maps/thumb/" .. map .. ".png")
+    elseif file.Exists("maps/" .. map .. ".png", "GAME") then
+        self.imageView:SetImage("maps/" .. map .. ".png")
     else
         self.imageView:SetImage("maps/thumb/noicon.png")
     end

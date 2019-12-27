@@ -22,6 +22,12 @@ function MapVote:Start(voteTime)
     self:Init() -- init server MapVote
 
     MapVote.voteTime = voteTime and voteTime or self.config.voteTime
+	local mapsAndGMs = {}
+	for k, mapAndGM in pairs(MapVote.maps) do
+		for map, gamemode in pairs(mapAndGM) do
+			mapsAndGMs[map] = gamemode
+		end
+	end
 
     net.Start("MapVote_Start")
     net.WriteUInt(MapVote.voteTime, 16)
@@ -34,7 +40,7 @@ function MapVote:Start(voteTime)
         local voteResults = {}
 
         -- initialize 
-        for k, map in pairs(MapVote.maps) do
+        for k, mapAndGM in pairs(MapVote.maps) do
             voteResults[k] = 0 
         end
 
@@ -60,7 +66,14 @@ function MapVote:Start(voteTime)
         end
 
         local winner = table.Random(winners)
-        local mapName = MapVote.maps[winner]
+        local mapAndGM = MapVote.maps[winner]
+
+		local mapName
+		local gamemode
+		for m, g in pairs(mapAndGM) do
+			gamemode = g
+			mapName = m
+		end
 
         self:UpdateRevoteBanList()
         self:AddToRevoteBanList(mapName)
@@ -69,6 +82,10 @@ function MapVote:Start(voteTime)
         net.Start("MapVote_End")
         net.WriteUInt(winner, 32)
         net.Broadcast()
+
+		timer.Simple(5, function()
+            RunConsoleCommand("gamemode", gamemode)
+        end)
 
         timer.Simple(5, function()
             RunConsoleCommand("changelevel", mapName)
@@ -128,10 +145,11 @@ end
 function MapVote:InitConfig()
     local defaultConfig = {
         voteTime = 20,
-        mapsToVote = 10,
+        mapsToVote = 20,
         mapRevoteBanRounds = 4,
         mapPrefixes = {"ttt_"},
-        mapExcludes = {}
+        mapExcludes = {},
+		defaultGamemode = "terrortown"
     }
     self.config = defaultConfig
 
@@ -157,30 +175,57 @@ function MapVote:ConfigIsValid()
 end
 
 function MapVote:GetRandomMaps()
-    local maps = file.Find("maps/*.bsp", "GAME")
+    local maps = {}
+	local customGMs = false
+
+	if file.Exists("lythos_mapvote/maplist.txt",  "DATA") then
+		customGMs = true
+		local mlFile = file.Open("lythos_mapvote/maplist.txt", "r", "DATA") -- gotta do it this way because there's a limit the the length of a single string
+		local index = 0
+		local line = mlFile:ReadLine()
+		while line do
+			local mGmPair = string.Split(string.TrimRight(line, "\n"), ":") -- remove newline character and split maps from GMs
+			local map = string.Trim(mGmPair[1])  -- trim off any spaces that might have been left in
+			local gamemodes = mGmPair[2] -- will trim whitespace later
+
+			if file.Exists("maps/"..map..".bsp", "GAME") then  -- check that the map file actually exists....
+				maps[map] = gamemodes
+			end
+
+			index = index + #line
+			mlFile:Seek(index)-- move to the start of the next line
+			line = mlFile:ReadLine()
+		end
+		mlFile:Close()
+	else
+		local mapFiles = file.Find("maps/*.bsp", "GAME")
+		for k, map in pairs(mapFiles) do
+			maps[map:sub(1, -5)] = {self.config.defaultGamemode}
+		end
+	end
 
     local result = {}
-
     local i = 0
     local max = self.config.mapsToVote
 
-    for k, map in RandomPairs(maps) do
+    for map, gamemodes in RandomPairs(maps) do
         if i >= max then break end
-        local mapstr = map:sub(1, -5)
 
-        -- using this to get only maps which have no mapicons (need this when I create mapicons :D)
-        --local a = file.Exists("maps/thumb/" .. mapstr .. ".png", "GAME")
-        --local b = file.Exists("maps/" .. mapstr .. ".png", "GAME")
+		local mapInConfig = customGMs -- this checks that it's in the map list, or if that's not being used that it has the right prefix
+		if !mapInConfig then mapInConfig = self:HasPrefix(map) end
+        local notExistsInRevoteBanList = not self.revoteBanList[map]
+        local notExclude = not self:IsExlude(map)
 
-        local notExistsInRevoteBanList = not self.revoteBanList[mapstr]
-        local notExclude = not self:IsExlude(mapstr)
-
-        if self:HasPrefix(mapstr) and notExistsInRevoteBanList and notExclude then 
-            table.insert(result, mapstr)
+        if mapInConfig and notExistsInRevoteBanList and notExclude then 
+            local mapAndGM = {}
+			local gamemodesList = string.Split(gamemodes, ",")
+			mapAndGM[map] = string.Trim(gamemodesList[math.random(#gamemodesList)]) -- randomly selects one of the gamemodes linked to that map
+			table.insert(result, mapAndGM)
             i = i + 1
         end
     end
 
+	print(table.ToString(result, "Maps and GMs", true))
     return result
 end
 

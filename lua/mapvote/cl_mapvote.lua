@@ -6,10 +6,10 @@ net.Receive("MapVote_Start", function()
     MapVote.voteTime = voteTime
     MapVote.voteTimeEnd = voteTime + CurTime()
 
-    local maps = net.ReadTable()
+    local mapsAndGMs = net.ReadTable()
 
     local gui = vgui.Create( "MapFrame" )
-    gui:AddMaps(maps)
+    gui:AddMaps(mapsAndGMs)
     MapVote.gui = gui
     
 end)
