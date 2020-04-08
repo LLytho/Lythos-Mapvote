@@ -80,7 +80,15 @@ end
 
 function RTV:StartMapvoteIfNeeded()
     if self:CountVotes() >= self:GetNecessaryVoteAmount() then
-        MapVote:Start()
+        if self.config.delayUntilEnd and GetRoundState() == ROUND_ACTIVE then
+            PrintMessage(HUD_PRINTTALK, "[GLOBAL] RockTheVote passed. Delaying map vote until end of round")
+            hook.Add("TTTEndRound", "RTVDelay", function()
+                hook.Remove("TTTEndRound", "RTVDelay")
+                MapVote:Start()
+            end)
+        else
+            MapVote:Start()
+        end
     end
 end
 
@@ -113,7 +121,8 @@ function RTV:InitConfig()
         minVote = 3,
         maxVote = 7,
         percentage = 0.4,
-        minPlaytime = 180 
+        minPlaytime = 90,
+        delayUntilEnd = true
     }
     self.config = defaultConfig
 

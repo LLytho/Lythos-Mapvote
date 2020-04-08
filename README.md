@@ -26,7 +26,8 @@ Stored in data/lythos_mapvote/rtv.txt as JSON.
 + **minVote:** Min vote to run mapvote (*default 3*)
 + **maxVote:** Max vote to run mapvote (*default 7*)
 + **percentage:** Percentage between 0 and 1 to choose min votes (*default 0.7*)
-+ **minPlaytime:** Playtime before allow RockTheVote in seconds (*default 180*)
++ **minPlaytime:** Playtime before allow RockTheVote in seconds (*default 90*)
++ **delayUntilEnd:** Delay until the end of round (*default true*)
 
 # Todo
 * random map selection (Something like a roulette)
