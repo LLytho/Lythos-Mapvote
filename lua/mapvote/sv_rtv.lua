@@ -43,7 +43,7 @@ function RTV:GetNecessaryVoteAmount()
     local playerCount = #player.GetAll()
     local percentage  = math.Clamp(self.config.percentage, 0, 1)
 
-    local amount = math.floor(playerCount * percentage)
+    local amount = math.floor((playerCount * percentage) + 0.5)
 
     return math.Clamp(amount, self.config.minVote, self.config.maxVote)
 end
