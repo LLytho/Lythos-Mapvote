@@ -8,7 +8,13 @@ end
 
 function ConfigHelper:ReadConfig(configFile) 
     local jsonString = file.Read("lythos_mapvote/" .. configFile .. ".txt", "DATA")
-    return util.JSONToTable(jsonString)
+    local json = util.JSONToTable(jsonString)
+
+    if json == nil then
+        print("Reading json config failed. Make sure you have the correct json format. You can use an online json validator to check errors");
+    end
+
+    return json
 end
 
 function ConfigHelper:WriteConfig(configFile, config) 

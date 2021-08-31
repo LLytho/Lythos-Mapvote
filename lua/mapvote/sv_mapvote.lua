@@ -16,12 +16,19 @@ net.Receive("MapVote_UpdateFromClient", function(len, ply)
     end
 end)
 
+function MapVote:GetVoteTime(baseVoteTime)
+    if NO_MAPICON_DEBUG then 
+        return 0
+    end
+
+    return baseVoteTime and baseVoteTime or self.config.voteTime
+end
 function MapVote:Start(voteTime)
     if self.runs then return end
 
     self:Init() -- init server MapVote
 
-    MapVote.voteTime = voteTime and voteTime or self.config.voteTime
+    MapVote.voteTime = self:GetVoteTime(voteTime)
 
     net.Start("MapVote_Start")
     net.WriteUInt(MapVote.voteTime, 16)
@@ -109,6 +116,7 @@ end
 
 function MapVote:UpdateRevoteBanList()
     if not self.revoteBanList then return end
+    if NO_MAPICON_DEBUG then return end
 
     for k, v in pairs(self.revoteBanList) do
         self.revoteBanList[k] = v - 1
@@ -122,7 +130,7 @@ function MapVote:SaveRevoteBanList()
     if not self.revoteBanList then return end
 
     ConfigHelper:CreateConfigFolderIfNotExists()
-    ConfigHelper:WriteConfig("revotebanlist", revoteBanListString)
+    ConfigHelper:WriteConfig("revotebanlist", self.revoteBanList)
 end
 
 function MapVote:InitConfig()
@@ -158,6 +166,8 @@ end
 
 function MapVote:GetRandomMaps()
     local maps = file.Find("maps/*.bsp", "GAME")
+    maps = self:RemoveFileExtensions(maps)
+    maps = self:FilterMissingIconMaps(maps)
 
     local result = {}
 
@@ -165,23 +175,46 @@ function MapVote:GetRandomMaps()
     local max = self.config.mapsToVote
 
     for k, map in RandomPairs(maps) do
-        if i >= max then break end
-        local mapstr = map:sub(1, -5)
+        if i >= max then break end   
 
-        -- using this to get only maps which have no mapicons (need this when I create mapicons :D)
-        --local a = file.Exists("maps/thumb/" .. mapstr .. ".png", "GAME")
-        --local b = file.Exists("maps/" .. mapstr .. ".png", "GAME")
+        local notExistsInRevoteBanList = not self.revoteBanList[map]
+        local notExclude = not self:IsExlude(map)
 
-        local notExistsInRevoteBanList = not self.revoteBanList[mapstr]
-        local notExclude = not self:IsExlude(mapstr)
-
-        if self:HasPrefix(mapstr) and notExistsInRevoteBanList and notExclude then 
-            table.insert(result, mapstr)
-            i = i + 1
+        if self:HasPrefix(map) and notExistsInRevoteBanList and notExclude then
+            if not a and not b then  
+                table.insert(result, map)
+                i = i + 1
+            end
         end
     end
 
     return result
+end
+
+function MapVote:RemoveFileExtensions(maps) 
+    local result = {}
+    for k, map in RandomPairs(maps) do
+        table.insert(result, map:sub(1, -5))
+    end
+    return result
+end
+
+function MapVote:FilterMissingIconMaps(maps) 
+    if not NO_MAPICON_DEBUG then
+        return maps;
+    end
+
+    local result = {}
+    for k, map in RandomPairs(maps) do
+        if(self:HasNoIcon(map)) then
+            table.insert(result, map)
+        end
+    end
+    return result
+end
+
+function MapVote:HasNoIcon(map)
+    return not file.Exists("maps/thumb/" .. map .. ".png", "GAME") and not file.Exists("maps/" .. map .. ".png", "GAME")
 end
 
 function MapVote:HasPrefix(map)
