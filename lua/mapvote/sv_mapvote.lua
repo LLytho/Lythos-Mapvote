@@ -233,4 +233,10 @@ hook.Add("Initialize", "MapChangeInitHook", function()
             end
         end
     end
+
+    if GAMEMODE_NAME == "murder" then
+        GAMEMODE.ChangeMap = function()
+            MapVote:Start()
+        end
+    end
 end )
