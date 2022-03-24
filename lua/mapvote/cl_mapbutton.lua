@@ -1,5 +1,5 @@
 surface.CreateFont("MapNameFont", {
-    font = "Tahoma", -- maybe i will change... not sure if I like Tahoma lol
+    font = "Tahoma Bold", -- maybe i will change... not sure if I like Tahoma lol
     size = 17,
     weight = 300,
     antialias = true
