@@ -59,7 +59,7 @@ hook.Add("OnPlayerChat", "Show mapvote again", function(ply, text)
 	text = string.lower(text)
     text = string.Trim(text)
 
-	if text == "!mapvoteshow" then
+	if text == "!mvs" then   -- shortened from "mapvoteshow" to "mvs"
 		MapVote.gui:SetVisible(true)
         return false
 	end
