@@ -1,5 +1,5 @@
 surface.CreateFont("TimeLeftFont", {
-    font = "Tahoma",
+    font = "Tahoma Bold",
     size = 40,
     weight = 800,
     antialias = true,
