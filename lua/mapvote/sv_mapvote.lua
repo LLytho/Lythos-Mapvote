@@ -272,4 +272,11 @@ hook.Add("Initialize", "MapChangeInitHook", function()
             MapVote:Start()
         end
     end
+       
+    if GAMEMODE_NAME == "hideandseek" then
+        hook.Add("HASVotemapStart", "MAPVOTEHNS_LOADMAP", function()
+            MapVote:Start()
+            return true
+        end)
+    end
 end )
